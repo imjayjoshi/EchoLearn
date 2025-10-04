@@ -48,12 +48,10 @@ The application uses a consistent design system with:
 - Custom UI components built with Shadcn/ui
 - Responsive layouts using Tailwind CSS
 - Consistent typography and spacing
-- Dark/Light theme support
 - Accessible components following WCAG guidelines
 
 ## State Management
 
-- React Query for server state management
 - Local state management using React hooks
 - Persistent storage for user preferences
 
