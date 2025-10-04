@@ -1,12 +1,105 @@
-# React + Vite
+# SpeakWise Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for learning through voice and speech recognition, built with React, TypeScript, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+SpeakWise's frontend is a responsive and user-friendly interface that helps users practice and improve their language skills through voice interaction. The application features a clean design with both light and dark modes, and provides real-time feedback on user performance.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React** - Frontend library
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Shadcn/ui** - Reusable component library
+- **React Router** - Client-side routing
+- **Vite** - Build tool and development server
+
+## Project Structure
+
+```
+frontend/
+├── src/
+│   ├── assets/          # Static assets (images, icons)
+│   ├── components/      # Reusable React components
+│   │   ├── ui/         # Shadcn UI components
+│   │   └── ...         # Custom components
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # Utility functions and helpers
+│   ├── pages/          # Page components
+│   ├── App.tsx         # Root component
+│   └── main.tsx        # Entry point
+├── public/             # Public assets
+└── package.json        # Project dependencies
+```
+
+## Key Features
+
+- **Authentication System**: Secure user authentication and authorization
+- **Dashboard**: Personal progress tracking and learning statistics
+- **Practice Interface**: Interactive voice-based learning exercises
+- **Progress Tracking**: Visual representation of learning progress
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+
+## Design System
+
+The application uses a consistent design system with:
+
+- Custom UI components built with Shadcn/ui
+- Responsive layouts using Tailwind CSS
+- Consistent typography and spacing
+- Dark/Light theme support
+- Accessible components following WCAG guidelines
+
+## State Management
+
+- React Query for server state management
+- Local state management using React hooks
+- Persistent storage for user preferences
+
+## Performance Features
+
+- Vite-powered development with HMR (Hot Module Replacement)
+- Code splitting for optimal load times
+- Asset optimization
+- Lazy loading of components
+- Efficient routing system
+
+## Screenshots
+
+Screenshots of the application can be found in the `docs/screenshots` directory. For convenience, a gallery of the current screenshots is embedded below so team members and contributors can preview key screens without opening the folder.
+
+### Dashboard
+
+![Dashboard 1](docs/screenshots/Dashboard/Dashboard-1.png)
+*Dashboard — main overview, widgets and stats.*
+
+![Dashboard 2](docs/screenshots/Dashboard/Dashboard-2.png)
+*Dashboard — alternate view with detailed panels.*
+
+![Progress 1](docs/screenshots/Dashboard/Progress-1.png)
+*Progress — user progress visualization and charts.*
+
+![Progress 2](docs/screenshots/Dashboard/Progress-2.png)
+*Progress — another view of progress tracking.*
+
+### User screens
+
+![Landing Page](docs/screenshots/User/LandingPage.png)
+*Landing page with hero section and call-to-action.*
+
+![Sign Up](docs/screenshots/User/SignUp.png)
+*Sign up form / onboarding flow.*
+
+![Sign In](docs/screenshots/User/SignIn.png)
+*Sign in / authentication screen.*
+
+![Features](docs/screenshots/User/Features.png)
+*Features page highlighting app capabilities.*
+
+![Works](docs/screenshots/User/Works.png)
+*How it works / user flow explanation.*
+
+![Footer](docs/screenshots/User/Footer.png)
+*Footer section example with links and copyright.*
+
