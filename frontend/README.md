@@ -69,19 +69,6 @@ The application uses a consistent design system with:
 
 Screenshots of the application can be found in the `docs/screenshots` directory. For convenience, a gallery of the current screenshots is embedded below so team members and contributors can preview key screens without opening the folder.
 
-### Dashboard
-
-![Dashboard 1](docs/screenshots/Dashboard/Dashboard-1.png)
-*Dashboard — main overview, widgets and stats.*
-
-![Dashboard 2](docs/screenshots/Dashboard/Dashboard-2.png)
-*Dashboard — alternate view with detailed panels.*
-
-![Progress 1](docs/screenshots/Dashboard/Progress-1.png)
-*Progress — user progress visualization and charts.*
-
-![Progress 2](docs/screenshots/Dashboard/Progress-2.png)
-*Progress — another view of progress tracking.*
 
 ### User screens
 
@@ -103,3 +90,17 @@ Screenshots of the application can be found in the `docs/screenshots` directory.
 ![Footer](docs/screenshots/User/Footer.png)
 *Footer section example with links and copyright.*
 
+
+### Dashboard
+
+![Dashboard 1](docs/screenshots/Dashboard/Dashboard-1.png)
+*Dashboard — main overview, widgets and stats.*
+
+![Dashboard 2](docs/screenshots/Dashboard/Dashboard-2.png)
+*Dashboard — alternate view with detailed panels.*
+
+![Progress 1](docs/screenshots/Dashboard/Progress-1.png)
+*Progress — user progress visualization and charts.*
+
+![Progress 2](docs/screenshots/Dashboard/Progress-2.png)
+*Progress — another view of progress tracking.*
