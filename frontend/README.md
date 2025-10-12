@@ -102,3 +102,23 @@ Screenshots of the application can be found in the `docs/screenshots` directory.
 
 ![Progress 2](docs/screenshots/Dashboard/Progress-2.png)
 *Progress — another view of progress tracking.*
+
+### Admin
+
+![Admin Dashboard](docs/screenshots/Admin/adminDashboard.png)
+*Admin — main admin dashboard overview.*
+
+![User Management](docs/screenshots/Admin/userManagement.png)
+*Admin — manage users and roles.*
+
+![Phrases Management](docs/screenshots/Admin/PhrasesManagement.png)
+*Admin — add/edit/remove phrases used in exercises.*
+
+![Add Phrase](docs/screenshots/Admin/addPhrase.png)
+*Admin — form to add a new phrase.*
+
+![Profile & Settings](docs/screenshots/Admin/profileSetting.png)
+*Admin — profile and settings page.*
+
+![Reports & Analysis](docs/screenshots/Admin/reportAnalysis.png)
+*Admin — reports and analytics view.*

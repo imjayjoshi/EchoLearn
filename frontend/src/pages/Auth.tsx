@@ -17,14 +17,27 @@ import { Link } from "react-router-dom";
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate authentication
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+
+    // Simulate authentication with admin detection
     setTimeout(() => {
       setIsLoading(false);
-      window.location.href = "/dashboard";
+
+      // Store user data in localStorage (temporary mock storage)
+      const userData = { email, isAdmin: email === "admin@gmail.com" };
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      // Redirect based on role
+      if (email === "admin@gmail.com") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/dashboard";
+      }
     }, 1500);
   };
 
@@ -86,6 +99,7 @@ const Auth = () => {
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="email"
+                        name="email"
                         type="email"
                         placeholder="your@email.com"
                         className="pl-10"
@@ -100,6 +114,7 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="password"
+                        name="password"
                         type="password"
                         placeholder="••••••••"
                         className="pl-10"
@@ -273,12 +288,10 @@ const Auth = () => {
           </Tabs>
         </Card>
 
-        {/* Trust indicators */}
+        {/* Trust indicators
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          <p>
-            ✓ No credit card required • ✓ 7-day free trial • ✓ Cancel anytime
-          </p>
-        </div>
+          <p>✓ No credit card required • ✓ 7-day free trial • ✓ Cancel anytime</p>
+        </div> */}
       </div>
     </div>
   );
