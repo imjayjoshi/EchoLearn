@@ -103,10 +103,25 @@ Screenshots of the application can be found in the `docs/screenshots` directory.
 ![Progress 2](docs/screenshots/Dashboard/Progress-2.png)
 *Progress — another view of progress tracking.*
 
+![Practice Mode](docs/screenshots/Dashboard/Practice.png)
+*Practice — interactive practice interface with voice input.*
+
+![Feedback 1](docs/screenshots/Dashboard/Feedback-1.png)
+*Feedback — example of feedback provided after a practice session.*
+
+![Feedback 2](docs/screenshots/Dashboard/Feedback-2.png)
+*Feedback — score breakdown and suggestions.*
+
+![Feedback 3](docs/screenshots/Dashboard/Feedback-3.png)
+*Feedback — detailed corrections and tips.*
+
 ### Admin
 
 ![Admin Dashboard](docs/screenshots/Admin/adminDashboard.png)
 *Admin — main admin dashboard overview.*
+
+![Admin Dashboard 2](docs/screenshots/Admin/adminDashboard2.png)
+*Admin — alternate dashboard / overview.*
 
 ![User Management](docs/screenshots/Admin/userManagement.png)
 *Admin — manage users and roles.*
@@ -119,6 +134,9 @@ Screenshots of the application can be found in the `docs/screenshots` directory.
 
 ![Profile & Settings](docs/screenshots/Admin/profileSetting.png)
 *Admin — profile and settings page.*
+
+![Profile & Settings 2](docs/screenshots/Admin/profileSetting2.png)
+*Admin — alternate profile/settings view.*
 
 ![Reports & Analysis](docs/screenshots/Admin/reportAnalysis.png)
 *Admin — reports and analytics view.*

@@ -12,9 +12,8 @@ const Practice = () => {
 
   const currentPhrase = {
     text: "Hello, how are you today?",
-    phonetic: "/həˈloʊ, haʊ ɑr ju təˈdeɪ/",
     difficulty: "Beginner",
-    category: "Greetings"
+    category: "Greetings",
   };
 
   const handleRecord = () => {
@@ -52,7 +51,7 @@ const Practice = () => {
                 Back to Dashboard
               </Link>
             </Button>
-            
+
             <div className="flex items-center space-x-2">
               <Badge variant="outline">{currentPhrase.category}</Badge>
               <Badge variant="secondary">{currentPhrase.difficulty}</Badge>
@@ -64,7 +63,6 @@ const Practice = () => {
       {/* Practice Arena */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="text-center space-y-8 sm:space-y-12">
-          
           {/* Instructions */}
           <div className="space-y-4">
             <h1 className="text-xl sm:text-2xl font-semibold text-muted-foreground">
@@ -79,13 +77,13 @@ const Practice = () => {
                 <p className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground leading-relaxed">
                   "{currentPhrase.text}"
                 </p>
-                <p className="text-sm sm:text-base lg:text-lg text-muted-foreground font-mono">
+                {/* <p className="text-sm sm:text-base lg:text-lg text-muted-foreground font-mono">
                   {currentPhrase.phonetic}
-                </p>
+                </p> */}
               </div>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 size="lg"
                 onClick={handlePlayback}
                 disabled={isPlaying}
@@ -99,7 +97,9 @@ const Practice = () => {
                 ) : (
                   <>
                     <Volume2 className="w-5 h-5" />
-                    <span className="hidden sm:inline">Listen to Native Speaker</span>
+                    <span className="hidden sm:inline">
+                      Listen to Native Speaker
+                    </span>
                     <span className="sm:hidden">Listen</span>
                   </>
                 )}
@@ -109,7 +109,6 @@ const Practice = () => {
 
           {/* Recording Interface */}
           <div className="space-y-6 sm:space-y-8">
-            
             {/* Waveform Visualization */}
             {isRecording && (
               <div className="flex items-center justify-center gap-1 h-12 sm:h-16">
@@ -119,7 +118,7 @@ const Practice = () => {
                     className="w-1 bg-gradient-hero rounded-full animate-pulse"
                     style={{
                       height: `${Math.random() * 40 + 16}px`,
-                      animationDelay: `${i * 0.1}s`
+                      animationDelay: `${i * 0.1}s`,
                     }}
                   />
                 ))}
@@ -131,7 +130,9 @@ const Practice = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-center gap-2 text-action">
                   <div className="w-3 h-3 bg-action rounded-full animate-pulse" />
-                  <span className="font-semibold text-sm sm:text-base">Recording...</span>
+                  <span className="font-semibold text-sm sm:text-base">
+                    Recording...
+                  </span>
                 </div>
                 <p className="text-muted-foreground text-sm sm:text-base">
                   Speak clearly into your microphone
@@ -144,7 +145,9 @@ const Practice = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-center gap-2 text-primary">
                   <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <span className="font-semibold text-sm sm:text-base">Processing your speech...</span>
+                  <span className="font-semibold text-sm sm:text-base">
+                    Processing your speech...
+                  </span>
                 </div>
                 <p className="text-muted-foreground text-sm sm:text-base">
                   Our AI is analyzing your pronunciation
@@ -159,7 +162,7 @@ const Practice = () => {
               onClick={handleRecord}
               disabled={hasRecorded}
               className={`w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full text-lg sm:text-xl font-bold transition-all duration-300 ${
-                isRecording ? 'animate-pulse scale-110' : 'hover:scale-110'
+                isRecording ? "animate-pulse scale-110" : "hover:scale-110"
               }`}
             >
               {isRecording ? (
@@ -171,21 +174,22 @@ const Practice = () => {
 
             <div className="text-center space-y-1">
               <p className="text-base sm:text-lg font-medium text-foreground">
-                {isRecording ? "Tap to stop recording" : "Tap to start recording"}
+                {isRecording
+                  ? "Tap to stop recording"
+                  : "Tap to start recording"}
               </p>
               <p className="text-muted-foreground text-sm sm:text-base">
-                {!isRecording && !hasRecorded && "Press the microphone to record your pronunciation"}
+                {!isRecording &&
+                  !hasRecorded &&
+                  "Press the microphone to record your pronunciation"}
               </p>
             </div>
-
           </div>
-          
+
           {/* Skip Option */}
           <div className="pt-8">
             <Button variant="ghost" asChild>
-              <Link to="/dashboard">
-                Skip this phrase
-              </Link>
+              <Link to="/dashboard">Skip this phrase</Link>
             </Button>
           </div>
         </div>

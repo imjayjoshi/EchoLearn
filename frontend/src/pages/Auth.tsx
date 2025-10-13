@@ -149,7 +149,7 @@ const Auth = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="gap-3 sm:gap-4">
                   <Button
                     variant="outline"
                     size="lg"
@@ -157,14 +157,6 @@ const Auth = () => {
                   >
                     <Chrome className="w-4 h-4" />
                     <span className="hidden sm:inline">Google</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full text-sm"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span className="hidden sm:inline">Apple</span>
                   </Button>
                 </div>
 
@@ -254,7 +246,7 @@ const Auth = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="gap-3 sm:gap-4">
                   <Button
                     variant="outline"
                     size="lg"
@@ -262,14 +254,6 @@ const Auth = () => {
                   >
                     <Chrome className="w-4 h-4" />
                     <span className="hidden sm:inline">Google</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full text-sm"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span className="hidden sm:inline">Apple</span>
                   </Button>
                 </div>
 
