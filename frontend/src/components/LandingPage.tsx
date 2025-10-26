@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Mic, CheckCircle } from "lucide-react";
 import heroImage from "@/assets/hero-soundwave.png";
 import mockupImage from "@/assets/app-mockup.png";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import LocomotiveScroll from "locomotive-scroll";
 import "locomotive-scroll/dist/locomotive-scroll.css";
 import Works from "./Works";

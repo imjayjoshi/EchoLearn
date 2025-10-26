@@ -17,7 +17,7 @@ import {
   Volume2,
   TrendingUp,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const Feedback = () => {
   const [score, setScore] = useState(0);

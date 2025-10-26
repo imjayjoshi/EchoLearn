@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -16,16 +16,25 @@ const ProtectedRoute = ({
     const userStr = localStorage.getItem("user");
 
     if (!userStr) {
-      // Not logged in, redirect to login
+      // Not logged in → redirect to login
       navigate("/login");
       return;
     }
 
     const user = JSON.parse(userStr);
 
-    if (requireAdmin && !user.isAdmin) {
-      // Not admin, redirect to regular dashboard
+    // Identify admin by email
+    const isAdmin = user.email === "admin@gmail.com";
+
+    if (requireAdmin && !isAdmin) {
+      // Not an admin → redirect to user dashboard
       navigate("/dashboard");
+      return;
+    }
+
+    if (!requireAdmin && isAdmin) {
+      // If admin tries to access user route → redirect to admin dashboard
+      navigate("/admin");
       return;
     }
   }, [navigate, requireAdmin]);

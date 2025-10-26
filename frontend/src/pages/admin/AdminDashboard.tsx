@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import {
   Card,
   CardContent,
@@ -19,6 +21,22 @@ import {
 } from "recharts";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) {
+      navigate("/login");
+      return;
+    }
+
+    const user = JSON.parse(userStr);
+
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
+
   const stats = [
     {
       title: "Total Users",
@@ -110,7 +128,6 @@ const AdminDashboard = () => {
 
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* User Growth Chart */}
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle>User Growth</CardTitle>
@@ -144,7 +161,6 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Performance Trends */}
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle>Average Pronunciation Score</CardTitle>
@@ -178,59 +194,6 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Recent Activity */}
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>
-            Latest user actions and system events
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              {
-                user: "jay@gmail.com",
-                action: "Completed 'Greetings' category",
-                time: "5 minutes ago",
-              },
-              {
-                user: "shruti@example.com",
-                action: "Achieved 90% pronunciation score",
-                time: "12 minutes ago",
-              },
-              {
-                user: "umang@example.com",
-                action: "Started 'Restaurant' practice",
-                time: "23 minutes ago",
-              },
-              {
-                user: "yashvi@example.com",
-                action: "Reached 7-day streak",
-                time: "1 hour ago",
-              },
-            ].map((activity, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
-              >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {activity.user}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {activity.action}
-                  </p>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {activity.time}
-                </span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

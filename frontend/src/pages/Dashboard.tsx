@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,11 +23,59 @@ import {
   Utensils,
   Plane,
   Heart,
+  LogOut,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const user = { name: "Jay", streak: 7 };
+  const [user, setUser] = useState<{ fullName: string; streak: number } | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // ✅ Fetch logged-in user data from backend
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/api/auth/me", {
+          withCredentials: true,
+        });
+        setUser(res.data.user);
+      } catch (error) {
+        console.error("User not logged in:", error);
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [navigate]);
+
+  // ✅ Logout handler
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/api/auth/user/logout", {
+        withCredentials: true,
+      });
+      toast.success("Logged out successfully!");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Failed to logout. Try again.");
+    }
+  };
+
+  // ✅ Loading screen
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-lg text-muted-foreground">
+        Loading your dashboard...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   const categories = [
     {
@@ -84,28 +136,28 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-foreground">
-              Hello, {user.name}!
-            </h1>
-            <div className="flex items-center gap-2">
-              <Flame className="w-6 h-6 text-action" />
-              <span className="text-xl font-semibold text-action">
-                {user.streak} day streak
-              </span>
+        {/* Header with Logout */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold text-foreground">
+                Hello, {user.fullName}!
+              </h1>
+              <div className="flex items-center gap-2">
+                <Flame className="w-6 h-6 text-action" />
+                <span className="text-xl font-semibold text-action">
+                  {user.streak || 0} day streak
+                </span>
+              </div>
             </div>
+            <p className="text-muted-foreground text-lg">
+              Your pronunciation journey continues strong!
+            </p>
           </div>
-          <p className="text-muted-foreground text-lg">
-            Your pronunciation journey continues strong! 🔥
-          </p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6 lg:space-y-8">
-            {/* Today's Practice */}
             <Card className="shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -206,9 +258,7 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Stats */}
             <Card className="shadow-card">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Your Progress</CardTitle>
@@ -218,7 +268,7 @@ const Dashboard = () => {
                   <span className="text-muted-foreground">Current Streak</span>
                   <div className="flex items-center gap-1 text-action font-semibold">
                     <Flame className="w-4 h-4" />
-                    {user.streak} days
+                    {user.streak || 0} days
                   </div>
                 </div>
 
@@ -243,7 +293,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Recent Achievements */}
             <Card className="shadow-card">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Recent Achievements</CardTitle>

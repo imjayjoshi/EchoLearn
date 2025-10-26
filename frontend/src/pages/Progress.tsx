@@ -19,7 +19,7 @@ import {
   Star,
   Zap,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const ProgressPage = () => {
   const user = {

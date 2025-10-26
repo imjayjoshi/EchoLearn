@@ -1,17 +1,17 @@
 import { useState, ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
-  BarChart3, 
-  Settings, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  BarChart3,
+  Settings,
+  LogOut,
   Menu,
   X,
   Bell,
-  Mic
+  Mic,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -44,17 +44,28 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-screen bg-card border-r transition-all duration-300 z-40 flex-shrink-0 ${
-          sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:w-20 lg:translate-x-0"
+          sidebarOpen
+            ? "w-64 translate-x-0"
+            : "w-64 -translate-x-full lg:w-20 lg:translate-x-0"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="h-16 border-b flex items-center justify-between px-4">
-            <Link to="/admin" className={`flex items-center space-x-2 ${!sidebarOpen && "lg:justify-center lg:w-full"}`}>
+            <Link
+              to="/admin"
+              className={`flex items-center space-x-2 ${
+                !sidebarOpen && "lg:justify-center lg:w-full"
+              }`}
+            >
               <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center flex-shrink-0">
                 <Mic className="w-5 h-5 text-white" />
               </div>
-              {sidebarOpen && <span className="text-lg font-bold text-primary">SpeakWise</span>}
+              {sidebarOpen && (
+                <span className="text-lg font-bold text-primary">
+                  SpeakWise
+                </span>
+              )}
             </Link>
             <Button
               variant="ghost"
@@ -71,13 +82,21 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
-                <Link key={item.path} to={item.path} onClick={() => setSidebarOpen(false)}>
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
+                >
                   <Button
                     variant={isActive(item.path) ? "default" : "ghost"}
-                    className={`w-full justify-start gap-3 ${!sidebarOpen && "lg:justify-center lg:px-2"}`}
+                    className={`w-full justify-start gap-3 ${
+                      !sidebarOpen && "lg:justify-center lg:px-2"
+                    }`}
                   >
                     <Icon className="w-5 h-5 flex-shrink-0" />
-                    {sidebarOpen && <span className="truncate">{item.label}</span>}
+                    {sidebarOpen && (
+                      <span className="truncate">{item.label}</span>
+                    )}
                   </Button>
                 </Link>
               );
@@ -133,7 +152,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-medium">Arjun Sharma</p>
-                  <p className="text-xs text-muted-foreground">admin@gmail.com</p>
+                  <p className="text-xs text-muted-foreground">
+                    admin@gmail.com
+                  </p>
                 </div>
               </div>
             </div>
