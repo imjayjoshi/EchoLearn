@@ -14,26 +14,38 @@ async function registerUser(req, res) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  const role = email === "admin@gmail.com" ? "admin" : "user";
+
   const user = await userModel.create({
     fullName,
     email,
     password: hashedPassword,
+    role: role,
   });
 
   const token = jwt.sign(
     {
       id: user._id,
+      role: user.role,
     },
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h",
+    }
   );
-  res.cookie("token", token);
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   res.status(200).json({
     message: "User Created Successfully",
     user: {
       id: user._id,
-      fullName: user.fulllName,
+      fullName: user.fullName,
       email: user.email,
+      role: user.role,
       streak: user.streak,
       badges: user.badges,
     },
@@ -63,19 +75,14 @@ async function loginUser(req, res) {
       );
 
       if (diffInDays === 1) {
-        // increase streak
         user.streak += 1;
       } else if (diffInDays > 1) {
-        // reset streak
         user.streak = 0;
       }
-      // no change
     } else {
-      // First ever login
       user.streak = 1;
     }
 
-    // Update last login to current time
     user.lastLogin = today;
     await user.save();
 
@@ -119,7 +126,7 @@ async function logoutUser(req, res) {
 
 async function getLoggedInUser(req, res) {
   try {
-    const user = req.user; // from middleware
+    const user = req.user;
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -144,5 +151,5 @@ module.exports = {
   registerUser,
   loginUser,
   logoutUser,
-  getLoggedInUser
+  getLoggedInUser,
 };

@@ -21,21 +21,34 @@ const ProtectedRoute = ({
       return;
     }
 
-    const user = JSON.parse(userStr);
+    try {
+      const user = JSON.parse(userStr);
 
-    // Identify admin by email
-    const isAdmin = user.email === "admin@gmail.com";
+      // Check if user object has role property
+      if (!user.role) {
+        console.error("User role not found");
+        localStorage.removeItem("user");
+        navigate("/login");
+        return;
+      }
 
-    if (requireAdmin && !isAdmin) {
-      // Not an admin → redirect to user dashboard
-      navigate("/dashboard");
-      return;
-    }
+      const isAdmin = user.role === "admin";
 
-    if (!requireAdmin && isAdmin) {
-      // If admin tries to access user route → redirect to admin dashboard
-      navigate("/admin");
-      return;
+      if (requireAdmin && !isAdmin) {
+        // Route requires admin but user is not admin → redirect to user dashboard
+        navigate("/dashboard");
+        return;
+      }
+
+      if (!requireAdmin && isAdmin) {
+        // Admin trying to access user route → redirect to admin dashboard
+        navigate("/admin");
+        return;
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      localStorage.removeItem("user");
+      navigate("/login");
     }
   }, [navigate, requireAdmin]);
 

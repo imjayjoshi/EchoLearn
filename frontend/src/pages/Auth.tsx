@@ -10,8 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Mic, ArrowLeft, Mail, Lock, User, Chrome } from "lucide-react";
+import { Mic, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import { toast } from "sonner";
@@ -46,6 +45,8 @@ const Auth = () => {
       });
 
       const user = response.data.user;
+
+      // Store user data in localStorage
       localStorage.setItem("user", JSON.stringify(user));
 
       toast.success(
@@ -54,8 +55,9 @@ const Auth = () => {
           : `Account created successfully. Welcome, ${user.fullName}!`
       );
 
+      // Redirect based on role
       setTimeout(() => {
-        if (localStorage.user.role === "admin") {
+        if (user.role === "admin") {
           navigate("/admin");
         } else {
           navigate("/dashboard");
@@ -97,7 +99,6 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* Auth Form */}
         <Card className="shadow-soft">
           <Tabs
             defaultValue="signin"
@@ -111,7 +112,6 @@ const Auth = () => {
               </TabsList>
             </CardHeader>
 
-            {/* Sign In */}
             <TabsContent value="signin">
               <CardContent className="space-y-6">
                 <div className="text-center">
@@ -161,7 +161,6 @@ const Auth = () => {
               </CardContent>
             </TabsContent>
 
-            {/* Sign Up */}
             <TabsContent value="signup">
               <CardContent className="space-y-6">
                 <div className="text-center">

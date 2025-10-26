@@ -2,13 +2,35 @@ import React from "react";
 import { Link, useNavigate } from "react-router";
 import { Button } from "./ui/button";
 import { Mic, LogOut } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const DashboardNavbar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint
+      await axios.get("http://localhost:3000/api/auth/user/logout", {
+        withCredentials: true,
+      });
+
+      // Clear local storage
+      localStorage.removeItem("user");
+
+      toast.success("Logged out successfully!");
+
+      // Redirect to login
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      // Even if backend call fails, clear local storage and redirect
+      localStorage.removeItem("user");
+      navigate("/login");
+
+      toast.error("Logout completed (with errors)");
+    }
   };
 
   return (
