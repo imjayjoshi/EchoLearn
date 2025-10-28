@@ -40,6 +40,17 @@ const userSchema = new mongoose.Schema(
       ],
       default: ["Word Whisperer"],
     },
+    languageLevel: {
+      type: String,
+      enum: ["beginner", "intermediate", "expert"],
+      default: "beginner",
+    },
+    practicedPhrases: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Phrase",
+      },
+    ],
     created_at: {
       type: Date,
       default: Date.now,
