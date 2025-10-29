@@ -13,12 +13,6 @@ router.delete("/:id", authAdmin, phraseController.deletePhrase); // Delete a phr
 // USER ROUTES (Protected - All Users)
 
 router.get("/level/:level", authUser, phraseController.getPhrasesByLevel); // Get phrases by level
-router.get(
-  "/language/:language",
-  authUser,
-  phraseController.getPhrasesByLanguage
-); // Get phrases by language
-
 router.get("/user/practiced", authUser, phraseController.getPracticedPhrases); // Get practiced phrases for the logged-in user
 router.get("/user/progress", authUser, phraseController.getUserProgress); // Get user's progress statistics
 router.post("/practice/:id", authUser, phraseController.markPhraseAsPracticed); // Mark phrase as practiced
