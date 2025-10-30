@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router";
 import { toast } from "sonner";
+import { authAPI, phraseAPI, Phrase } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,44 +19,143 @@ import {
   TrendingUp,
   Clock,
   Target,
-  Coffee,
-  Utensils,
-  Plane,
-  Heart,
+  Mic,
   LogOut,
+  BookOpen,
+  GraduationCap,
+  Trophy,
+  Globe,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface LevelCategory {
+  id: string;
+  title: string;
+  icon: JSX.Element;
+  phrases: number;
+  completed: number;
+  color: string;
+  level: string;
+}
 
 const Dashboard = () => {
   const [user, setUser] = useState<{ fullName: string; streak: number } | null>(
     null
   );
+  const [allPhrases, setAllPhrases] = useState<Phrase[]>([]);
+  const [filteredPhrases, setFilteredPhrases] = useState<Phrase[]>([]);
+  const [levelCategories, setLevelCategories] = useState<LevelCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState<
+    "English" | "Japanese" | "All"
+  >("All");
   const navigate = useNavigate();
 
-  // ✅ Fetch logged-in user data from backend
+  // Fetch user and phrases data
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/auth/me", {
-          withCredentials: true,
-        });
-        setUser(res.data.user);
+        // Fetch user data
+        const userRes = await authAPI.getMe();
+        setUser(userRes.data.user);
+
+        // Fetch phrases by each level
+        const [beginnerRes, intermediateRes, expertRes] = await Promise.all([
+          phraseAPI.getPhrasesByLevel("beginner"),
+          phraseAPI.getPhrasesByLevel("intermediate"),
+          phraseAPI.getPhrasesByLevel("expert"),
+        ]);
+
+        const beginnerPhrases = beginnerRes.data.phrases || [];
+        const intermediatePhrases = intermediateRes.data.phrases || [];
+        const expertPhrases = expertRes.data.phrases || [];
+
+        const allPhrasesData = [
+          ...beginnerPhrases,
+          ...intermediatePhrases,
+          ...expertPhrases,
+        ];
+        setAllPhrases(allPhrasesData);
+        setFilteredPhrases(allPhrasesData);
+
+        // Create level categories
+        updateCategories(allPhrasesData);
       } catch (error) {
-        console.error("User not logged in:", error);
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load dashboard data");
         navigate("/login");
       } finally {
         setLoading(false);
       }
     };
-    fetchUser();
+    fetchData();
   }, [navigate]);
 
-  // ✅ Logout handler
+  // Filter phrases by language
+  useEffect(() => {
+    if (selectedLanguage === "All") {
+      setFilteredPhrases(allPhrases);
+      updateCategories(allPhrases);
+    } else {
+      const filtered = allPhrases.filter(
+        (p) => p.language === selectedLanguage
+      );
+      setFilteredPhrases(filtered);
+      updateCategories(filtered);
+    }
+  }, [selectedLanguage, allPhrases]);
+
+  const updateCategories = (phrases: Phrase[]) => {
+    const beginnerCount = phrases.filter((p) => p.level === "beginner").length;
+    const intermediateCount = phrases.filter(
+      (p) => p.level === "intermediate"
+    ).length;
+    const expertCount = phrases.filter((p) => p.level === "expert").length;
+
+    const categories: LevelCategory[] = [
+      {
+        id: "beginner",
+        title: "Beginner",
+        level: "beginner",
+        icon: <BookOpen className="w-6 h-6" />,
+        phrases: beginnerCount,
+        completed: 0,
+        color: "text-success",
+      },
+      {
+        id: "intermediate",
+        title: "Intermediate",
+        level: "intermediate",
+        icon: <GraduationCap className="w-6 h-6" />,
+        phrases: intermediateCount,
+        completed: 0,
+        color: "text-action",
+      },
+      {
+        id: "expert",
+        title: "Expert",
+        level: "expert",
+        icon: <Trophy className="w-6 h-6" />,
+        phrases: expertCount,
+        completed: 0,
+        color: "text-primary",
+      },
+    ];
+
+    setLevelCategories(categories);
+  };
+
+  // Logout handler
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/api/auth/user/logout", {
-        withCredentials: true,
-      });
+      await authAPI.logout();
+      localStorage.removeItem("user");
       toast.success("Logged out successfully!");
       navigate("/login");
     } catch (error) {
@@ -64,7 +163,6 @@ const Dashboard = () => {
     }
   };
 
-  // ✅ Loading screen
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen text-lg text-muted-foreground">
@@ -77,66 +175,59 @@ const Dashboard = () => {
     return null;
   }
 
-  const categories = [
-    {
-      id: "greetings",
-      title: "Greetings",
-      icon: <Heart className="w-6 h-6" />,
-      phrases: 12,
-      completed: 8,
-      color: "text-success",
-    },
-    {
-      id: "restaurant",
-      title: "Restaurant",
-      icon: <Utensils className="w-6 h-6" />,
-      phrases: 15,
-      completed: 3,
-      color: "text-action",
-    },
-    {
-      id: "travel",
-      title: "Travel",
-      icon: <Plane className="w-6 h-6" />,
-      phrases: 20,
-      completed: 0,
-      color: "text-primary",
-    },
-    {
-      id: "business",
-      title: "Business",
-      icon: <Coffee className="w-6 h-6" />,
-      phrases: 18,
-      completed: 0,
-      color: "text-muted-foreground",
-    },
-  ];
-
-  const todaysPhrases = [
-    {
-      id: 1,
-      text: "Hello, how are you today?",
-      difficulty: "Beginner",
-      estimated: "2 min",
-    },
-    {
-      id: 2,
-      text: "Could you please help me with this?",
-      difficulty: "Intermediate",
-      estimated: "3 min",
-    },
-    {
-      id: 3,
-      text: "I would like to make a reservation",
-      difficulty: "Intermediate",
-      estimated: "3 min",
-    },
-  ];
+  // Get today's recommended phrases (first 3 phrases)
+  const todaysPhrases = filteredPhrases.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Navbar for Dashboard */}
+      <header className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/dashboard" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
+                <Mic className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-primary">SpeakWise</h1>
+            </Link>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Language Selector */}
+              <Select
+                value={selectedLanguage}
+                onValueChange={(value) => setSelectedLanguage(value as any)}
+              >
+                <SelectTrigger className="w-[140px] h-9">
+                  <Globe className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Languages</SelectItem>
+                  <SelectItem value="English">English 🇬🇧</SelectItem>
+                  <SelectItem value="Japanese">Japanese 🇯🇵</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Link to="/progress">
+                <Button variant="ghost" size="sm" className="hidden sm:flex">
+                  Progress
+                </Button>
+              </Link>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleLogout}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header with Logout */}
+        {/* Header with Streak */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -158,6 +249,7 @@ const Dashboard = () => {
 
         <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+            {/* Today's Recommended Practice */}
             <Card className="shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -166,57 +258,88 @@ const Dashboard = () => {
                 </CardTitle>
                 <CardDescription>
                   Personalized phrases to improve your pronunciation
+                  {selectedLanguage !== "All" && (
+                    <span className="ml-2 text-primary">
+                      ({selectedLanguage} only)
+                    </span>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {todaysPhrases.map((phrase) => (
-                  <div
-                    key={phrase.id}
-                    className="p-3 sm:p-4 rounded-lg border bg-secondary/20 hover:bg-secondary/40 transition-colors group"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-foreground font-medium mb-2 text-sm sm:text-base">
-                          "{phrase.text}"
-                        </p>
-                        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                          <Badge variant="outline" className="text-xs">
-                            {phrase.difficulty}
-                          </Badge>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {phrase.estimated}
+                {todaysPhrases.length > 0 ? (
+                  todaysPhrases.map((phrase) => (
+                    <div
+                      key={phrase._id}
+                      className="p-3 sm:p-4 rounded-lg border bg-secondary/20 hover:bg-secondary/40 transition-colors group"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <p className="text-foreground font-medium text-sm sm:text-base">
+                              "{phrase.text}"
+                            </p>
+                            <Badge variant="outline" className="text-xs">
+                              {phrase.language === "English" ? "🇬🇧" : "🇯🇵"}
+                            </Badge>
+                          </div>
+                          {phrase.meaning && (
+                            <p className="text-muted-foreground text-xs sm:text-sm mb-2">
+                              {phrase.meaning}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                            <Badge
+                              variant="outline"
+                              className="text-xs capitalize"
+                            >
+                              {phrase.level}
+                            </Badge>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              2-3 min
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <Button
-                        variant="action"
-                        size="sm"
-                        className="group-hover:scale-105 transition-transform w-full sm:w-auto"
-                        asChild
-                      >
-                        <Link to="/practice">
+                        <Button
+                          variant="action"
+                          size="sm"
+                          className="group-hover:scale-105 transition-transform w-full sm:w-auto"
+                          onClick={() => navigate(`/practice/${phrase._id}`)}
+                        >
                           <Play className="w-4 h-4" />
                           Practice
-                        </Link>
-                      </Button>
+                        </Button>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground mb-4">
+                      No phrases available for{" "}
+                      {selectedLanguage === "All"
+                        ? "any language"
+                        : selectedLanguage}{" "}
+                      yet.
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Admin can add phrases from the admin panel
+                    </p>
                   </div>
-                ))}
+                )}
               </CardContent>
             </Card>
 
-            {/* Categories */}
+            {/* Practice by Level */}
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>Practice Categories</CardTitle>
+                <CardTitle>Practice by Level</CardTitle>
                 <CardDescription>
-                  Choose a topic that interests you most
+                  Choose your difficulty level to start learning
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {categories.map((category) => (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {levelCategories.map((category) => (
                     <div
                       key={category.id}
                       className="p-3 sm:p-4 rounded-lg border hover:shadow-soft transition-all duration-300 group cursor-pointer"
@@ -234,12 +357,14 @@ const Dashboard = () => {
                           variant="secondary"
                           className="text-xs flex-shrink-0"
                         >
-                          {category.completed}/{category.phrases}
+                          {category.phrases}
                         </Badge>
                       </div>
 
                       <Progress
-                        value={(category.completed / category.phrases) * 100}
+                        value={
+                          (category.completed / (category.phrases || 1)) * 100
+                        }
                         className="h-2 mb-3"
                       />
 
@@ -248,8 +373,13 @@ const Dashboard = () => {
                         size="sm"
                         className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors text-xs sm:text-sm"
                         asChild
+                        disabled={category.phrases === 0}
                       >
-                        <Link to="/practice">Continue Learning</Link>
+                        <Link
+                          to={`/level/${category.level}?lang=${selectedLanguage}`}
+                        >
+                          Start Learning ({category.phrases})
+                        </Link>
                       </Button>
                     </div>
                   ))}
@@ -258,6 +388,7 @@ const Dashboard = () => {
             </Card>
           </div>
 
+          {/* Right Sidebar */}
           <div className="space-y-6">
             <Card className="shadow-card">
               <CardHeader className="pb-3">
@@ -273,15 +404,17 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">
-                    Phrases Mastered
+                  <span className="text-muted-foreground">Total Phrases</span>
+                  <span className="font-semibold text-success">
+                    {filteredPhrases.length}
                   </span>
-                  <span className="font-semibold text-success">11</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Average Score</span>
-                  <span className="font-semibold text-primary">85%</span>
+                  <span className="text-muted-foreground">Levels</span>
+                  <span className="font-semibold text-primary">
+                    {levelCategories.length}
+                  </span>
                 </div>
 
                 <Button variant="outline" size="sm" className="w-full" asChild>
@@ -295,6 +428,33 @@ const Dashboard = () => {
 
             <Card className="shadow-card">
               <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Languages</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🇬🇧</span>
+                    <span className="font-medium">English</span>
+                  </div>
+                  <Badge variant="secondary">
+                    {allPhrases.filter((p) => p.language === "English").length}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🇯🇵</span>
+                    <span className="font-medium">Japanese</span>
+                  </div>
+                  <Badge variant="secondary">
+                    {allPhrases.filter((p) => p.language === "Japanese").length}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card">
+              <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Recent Achievements</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -302,10 +462,10 @@ const Dashboard = () => {
                   <Award className="w-6 h-6 text-success" />
                   <div>
                     <p className="font-medium text-success text-sm">
-                      Week Warrior
+                      Getting Started
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      7-day streak achieved!
+                      Welcome to SpeakWise!
                     </p>
                   </div>
                 </div>
@@ -314,10 +474,10 @@ const Dashboard = () => {
                   <Target className="w-6 h-6 text-primary" />
                   <div>
                     <p className="font-medium text-primary text-sm">
-                      Pronunciation Pro
+                      First Practice
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Scored 90%+ five times
+                      Complete your first phrase
                     </p>
                   </div>
                 </div>

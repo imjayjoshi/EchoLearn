@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,14 +19,24 @@ import {
   Volume2,
   TrendingUp,
 } from "lucide-react";
-import { Link } from "react-router";
+
+interface Phrase {
+  _id: string;
+  text: string;
+  language: string;
+  category: string;
+  difficulty: string;
+}
 
 const Feedback = () => {
+  const { phraseId } = useParams();
+  const [phrase, setPhrase] = useState<Phrase | null>(null);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Mock feedback data - Replace with real API call later
   const practiceResult = {
-    phrase: "Hello, how are you today?",
     score: 85,
     feedback: "Fantastic Job!",
     improvements: [
@@ -43,6 +55,26 @@ const Feedback = () => {
       },
     ],
   };
+
+  useEffect(() => {
+    const fetchPhrase = async () => {
+      try {
+        if (phraseId) {
+          const response = await axios.get(
+            `http://localhost:3000/api/phrases/${phraseId}`,
+            { withCredentials: true }
+          );
+          setPhrase(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching phrase:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhrase();
+  }, [phraseId]);
 
   useEffect(() => {
     // Animate score on component mount
@@ -75,6 +107,16 @@ const Feedback = () => {
     return "Keep going! Practice makes perfect!";
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-lg text-muted-foreground">
+        Loading feedback...
+      </div>
+    );
+  }
+
+  const phraseText = phrase?.text || "Your phrase";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -82,9 +124,9 @@ const Feedback = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/practice">
+              <Link to="/dashboard">
                 <ArrowLeft className="w-4 h-4" />
-                Back to Practice
+                Back to Dashboard
               </Link>
             </Button>
 
@@ -148,7 +190,7 @@ const Feedback = () => {
                 {getScoreMessage(score)}
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground">
-                Your pronunciation of "{practiceResult.phrase}"
+                Your pronunciation of "{phraseText}"
               </p>
             </div>
           </div>
@@ -224,7 +266,7 @@ const Feedback = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Button variant="outline" size="lg" asChild>
-              <Link to="/practice">
+              <Link to={`/practice/${phraseId}`}>
                 <RotateCcw className="w-5 h-5" />
                 Try Again
               </Link>
