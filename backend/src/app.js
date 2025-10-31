@@ -3,6 +3,8 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
 const phraseRoutes = require("./routes/phrase.routes");
+const practiceHistoryRoutes = require("./routes/practiceHistory.routes");
+const adminRoutes = require("./routes/admin.routes");
 const cors = require("cors");
 
 app.use(express.json());
@@ -19,6 +21,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/phrase", phraseRoutes);
+app.use("/api/practice-history", practiceHistoryRoutes);
 
 module.exports = app;

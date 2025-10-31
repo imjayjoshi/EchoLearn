@@ -4,7 +4,7 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import Practice from "@/pages/Practice";
 import Feedback from "@/pages/Feedback";
-import Progress from "@/pages/Progress";
+import Progress from "@/pages/ProgressPage";
 import LevelPhrases from "@/pages/LevelPhrases";
 import NotFound from "@/pages/NotFound";
 import AdminLayout from "@/components/admin/AdminLayout";

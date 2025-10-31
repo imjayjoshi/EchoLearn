@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
-import axios from "axios";
+import { phraseAPI, Phrase } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,15 +18,9 @@ import {
   Trophy,
   Volume2,
   TrendingUp,
+  Target,
+  Zap,
 } from "lucide-react";
-
-interface Phrase {
-  _id: string;
-  text: string;
-  language: string;
-  category: string;
-  difficulty: string;
-}
 
 const Feedback = () => {
   const { phraseId } = useParams();
@@ -34,37 +28,22 @@ const Feedback = () => {
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // Mock feedback data - Replace with real API call later
-  const practiceResult = {
-    score: 85,
-    feedback: "Fantastic Job!",
-    improvements: [
-      { word: "Hello", score: 92, feedback: "Perfect pronunciation!" },
-      { word: "how", score: 88, feedback: "Great intonation" },
-      {
-        word: "are",
-        score: 78,
-        feedback: "Try to emphasize the 'r' sound more",
-      },
-      { word: "you", score: 90, feedback: "Excellent" },
-      {
-        word: "today",
-        score: 82,
-        feedback: "Good rhythm, work on the 'ay' ending",
-      },
-    ],
-  };
+  const [practiceResult, setPracticeResult] = useState<any>(null);
 
   useEffect(() => {
     const fetchPhrase = async () => {
       try {
         if (phraseId) {
-          const response = await axios.get(
-            `http://localhost:3000/api/phrases/${phraseId}`,
-            { withCredentials: true }
-          );
-          setPhrase(response.data);
+          const response = await phraseAPI.getPhraseById(phraseId);
+          setPhrase(response.data.phrase);
+        }
+
+        // Get practice result from sessionStorage
+        const resultStr = sessionStorage.getItem("practiceResult");
+        if (resultStr) {
+          const result = JSON.parse(resultStr);
+          setPracticeResult(result);
+          sessionStorage.removeItem("practiceResult"); // Clear after reading
         }
       } catch (error) {
         console.error("Error fetching phrase:", error);
@@ -77,20 +56,23 @@ const Feedback = () => {
   }, [phraseId]);
 
   useEffect(() => {
-    // Animate score on component mount
-    setTimeout(() => {
-      setShowScore(true);
-      let currentScore = 0;
-      const interval = setInterval(() => {
-        currentScore += 2;
-        setScore(currentScore);
-        if (currentScore >= practiceResult.score) {
-          setScore(practiceResult.score);
-          clearInterval(interval);
-        }
-      }, 30);
-    }, 500);
-  }, [practiceResult.score]);
+    if (practiceResult) {
+      // Animate score on component mount
+      setTimeout(() => {
+        setShowScore(true);
+        let currentScore = 0;
+        const targetScore = practiceResult.overallScore;
+        const interval = setInterval(() => {
+          currentScore += 2;
+          setScore(currentScore);
+          if (currentScore >= targetScore) {
+            setScore(targetScore);
+            clearInterval(interval);
+          }
+        }, 30);
+      }, 500);
+    }
+  }, [practiceResult]);
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return "text-success";
@@ -100,17 +82,45 @@ const Feedback = () => {
   };
 
   const getScoreMessage = (score: number) => {
-    if (score >= 90) return "Outstanding! You sound like a native speaker!";
-    if (score >= 80) return "Fantastic Job! You're doing great!";
-    if (score >= 70) return "Great Progress! Keep practicing!";
-    if (score >= 60) return "Good effort! You're improving!";
-    return "Keep going! Practice makes perfect!";
+    if (score >= 95) return "Outstanding! Perfect pronunciation!";
+    if (score >= 90) return "Excellent! You sound like a native speaker!";
+    if (score >= 85) return "Very Good! Minor improvements needed.";
+    if (score >= 80) return "Good Job! Keep practicing!";
+    if (score >= 70) return "Fair! You're making progress!";
+    if (score >= 60) return "Needs Work! Practice more for better results.";
+    return "Keep Trying! Regular practice will help!";
+  };
+
+  const getComponentIcon = (component: string) => {
+    switch (component) {
+      case "accuracy":
+        return <Target className="w-5 h-5" />;
+      case "fluency":
+        return <Zap className="w-5 h-5" />;
+      case "pronunciation":
+        return <Volume2 className="w-5 h-5" />;
+      default:
+        return <TrendingUp className="w-5 h-5" />;
+    }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen text-lg text-muted-foreground">
         Loading feedback...
+      </div>
+    );
+  }
+
+  if (!practiceResult) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-lg text-muted-foreground mb-4">
+          No practice data found
+        </p>
+        <Button asChild>
+          <Link to="/dashboard">Back to Dashboard</Link>
+        </Button>
       </div>
     );
   }
@@ -179,7 +189,7 @@ const Feedback = () => {
                     {showScore ? score : 0}%
                   </div>
                   <div className="text-muted-foreground text-xs sm:text-sm">
-                    Accuracy Score
+                    Overall Score
                   </div>
                 </div>
               </div>
@@ -195,69 +205,113 @@ const Feedback = () => {
             </div>
           </div>
 
-          {/* Detailed Breakdown */}
+          {/* Component Scores */}
           <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-primary" />
-                Word-by-Word Analysis
+                Performance Breakdown
               </CardTitle>
               <CardDescription>
-                See how you performed on each word
+                Detailed analysis of your pronunciation
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {practiceResult.improvements.map((word, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-secondary/20 gap-3 sm:gap-4"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                      <span className="font-semibold text-base sm:text-lg truncate">
-                        "{word.word}"
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className={`${getScoreColor(
-                          word.score
-                        )} border-current text-xs flex-shrink-0`}
-                      >
-                        {word.score}%
-                      </Badge>
+              {[
+                {
+                  name: "Accuracy",
+                  value: practiceResult.accuracy,
+                  key: "accuracy",
+                },
+                {
+                  name: "Fluency",
+                  value: practiceResult.fluency,
+                  key: "fluency",
+                },
+                {
+                  name: "Pronunciation",
+                  value: practiceResult.pronunciation,
+                  key: "pronunciation",
+                },
+              ].map((component) => (
+                <div key={component.key} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getComponentIcon(component.key)}
+                      <span className="font-medium">{component.name}</span>
                     </div>
-                    <p className="text-muted-foreground text-xs sm:text-sm mb-2">
-                      {word.feedback}
-                    </p>
-                    <Progress
-                      value={word.score}
-                      className="h-2 max-w-full sm:max-w-xs"
-                    />
+                    <Badge
+                      variant="outline"
+                      className={`${getScoreColor(
+                        component.value
+                      )} border-current`}
+                    >
+                      {component.value}%
+                    </Badge>
                   </div>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full sm:w-auto flex-shrink-0"
-                  >
-                    <Volume2 className="w-4 h-4" />
-                    <span className="sm:hidden ml-2">Listen</span>
-                  </Button>
+                  <Progress value={component.value} className="h-3" />
                 </div>
               ))}
             </CardContent>
           </Card>
 
+          {/* Word-by-Word Analysis */}
+          {practiceResult.wordAnalysis &&
+            practiceResult.wordAnalysis.length > 0 && (
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    Word-by-Word Analysis
+                  </CardTitle>
+                  <CardDescription>
+                    See how you performed on each word
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {practiceResult.wordAnalysis.map((word, index: number) => (
+                    <div
+                      key={index}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-secondary/20 gap-3 sm:gap-4"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                          <span className="font-semibold text-base sm:text-lg truncate">
+                            "{word.word}"
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className={`${getScoreColor(
+                              word.score
+                            )} border-current text-xs flex-shrink-0`}
+                          >
+                            {word.score}%
+                          </Badge>
+                        </div>
+                        <p className="text-muted-foreground text-xs sm:text-sm mb-2">
+                          {word.feedback}
+                        </p>
+                        <Progress
+                          value={word.score}
+                          className="h-2 max-w-full sm:max-w-xs"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
           {/* Achievement Badge */}
-          {score >= 80 && (
+          {score >= 90 && (
             <Card className="shadow-card bg-gradient-to-r from-success/5 to-success/10 border-success/20">
               <CardContent className="p-6 text-center">
                 <Trophy className="w-12 h-12 text-success mx-auto mb-3" />
                 <h3 className="text-xl font-semibold text-success mb-2">
-                  Achievement Unlocked!
+                  Excellent Performance!
                 </h3>
                 <p className="text-muted-foreground">
-                  You scored over 80% - you're becoming a pronunciation pro!
+                  You scored over 90% - you're becoming a pronunciation master!
                 </p>
               </CardContent>
             </Card>
@@ -268,7 +322,7 @@ const Feedback = () => {
             <Button variant="outline" size="lg" asChild>
               <Link to={`/practice/${phraseId}`}>
                 <RotateCcw className="w-5 h-5" />
-                Try Again
+                Practice Again
               </Link>
             </Button>
 
@@ -287,18 +341,27 @@ const Feedback = () => {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  • Practice the 'r' sound by placing your tongue slightly back
-                </li>
-                <li>
-                  • Work on vowel endings - they're crucial for natural
-                  pronunciation
-                </li>
+                {score < 80 && (
+                  <>
+                    <li>• Listen to the native pronunciation multiple times</li>
+                    <li>
+                      • Practice slowly at first, then gradually increase speed
+                    </li>
+                  </>
+                )}
+                {practiceResult.accuracy < 85 && (
+                  <li>
+                    • Focus on pronouncing each word clearly and correctly
+                  </li>
+                )}
+                {practiceResult.fluency < 85 && (
+                  <li>• Work on speaking smoothly without long pauses</li>
+                )}
+                {practiceResult.pronunciation < 85 && (
+                  <li>• Pay attention to stress patterns and intonation</li>
+                )}
                 <li>• Record yourself daily to track improvement over time</li>
-                <li>
-                  • Listen to native speakers and mimic their intonation
-                  patterns
-                </li>
+                <li>• Mimic native speakers' rhythm and intonation patterns</li>
               </ul>
             </CardContent>
           </Card>

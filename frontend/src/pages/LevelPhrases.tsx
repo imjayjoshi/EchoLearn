@@ -125,7 +125,7 @@ const LevelPhrases = () => {
             <div className="flex items-center gap-2">
               {selectedLanguage !== "All" && (
                 <Badge variant="outline">
-                  {selectedLanguage === "English" ? "🇬🇧" : "🇯🇵"}{" "}
+                  {selectedLanguage === "English" ? "en" : "🇯🇵"}{" "}
                   {selectedLanguage}
                 </Badge>
               )}
@@ -182,7 +182,7 @@ const LevelPhrases = () => {
                         #{index + 1}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        {phrase.language === "English" ? "🇬🇧" : "🇯🇵"}
+                        {phrase.language === "English" ? "en" : "🇯🇵"}
                       </Badge>
                     </div>
                     <Button

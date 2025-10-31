@@ -202,7 +202,7 @@ const Dashboard = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Languages</SelectItem>
-                  <SelectItem value="English">English 🇬🇧</SelectItem>
+                  <SelectItem value="English">English en</SelectItem>
                   <SelectItem value="Japanese">Japanese 🇯🇵</SelectItem>
                 </SelectContent>
               </Select>
@@ -279,7 +279,7 @@ const Dashboard = () => {
                               "{phrase.text}"
                             </p>
                             <Badge variant="outline" className="text-xs">
-                              {phrase.language === "English" ? "🇬🇧" : "🇯🇵"}
+                              {phrase.language === "English" ? "en" : "🇯🇵"}
                             </Badge>
                           </div>
                           {phrase.meaning && (
@@ -433,7 +433,7 @@ const Dashboard = () => {
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl">🇬🇧</span>
+                    <span className="text-2xl">en</span>
                     <span className="font-medium">English</span>
                   </div>
                   <Badge variant="secondary">
